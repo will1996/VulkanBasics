@@ -1,0 +1,15 @@
+{
+    "tasks": [
+        {
+            "type": "shell",
+            "label": "make Main",
+            "command": "make",
+            "args": [
+            ],
+            "options": {
+                "cwd": "/Users/willchambers/Projects/VulkanPractice/build"
+            }
+        }
+    ],
+    "version": "2.0.0"
+}
