@@ -29,8 +29,10 @@ struct SwapChainSupportDetails {
     ~BasicRenderer(); 
     void run();
     bool d_framebufferResized = false;
+    VkShaderModule createShaderModule(const std::vector<char>& code);
   private:
     
+    static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData);
     bool d_enableValidationLayers;
     GLFWwindow* d_window;
 
@@ -94,14 +96,17 @@ struct SwapChainSupportDetails {
 
     void cleanup();
       void cleanupSwapChain();
-
-
+    
+    void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo);
+    void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
+    void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
+    uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
     void recreateSwapChain();
     std::vector<const char*> getRequiredExtensions();
     bool checkValidationLayerSupport();
     bool isDeviceSuitable(VkPhysicalDevice device);
-   QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
-   SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device);
+    QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
+    SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device);
     VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
     
 

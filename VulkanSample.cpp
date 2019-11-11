@@ -517,7 +517,7 @@ private:
 
     void createGraphicsPipeline() {
         auto vertShaderCode = readFile("../shaders/vert.spv");
-        auto fragShaderCode = readFile("shaders/frag.spv");
+        auto fragShaderCode = readFile("../shaders/frag.spv");
 
         VkShaderModule vertShaderModule = createShaderModule(vertShaderCode);
         VkShaderModule fragShaderModule = createShaderModule(fragShaderCode);
@@ -782,7 +782,6 @@ private:
 
     void createCommandBuffers() {
         commandBuffers.resize(swapChainFramebuffers.size());
-
         VkCommandBufferAllocateInfo allocInfo = {};
         allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
         allocInfo.commandPool = commandPool;
