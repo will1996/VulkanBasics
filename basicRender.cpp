@@ -100,49 +100,21 @@ BasicRenderer::QueueFamilyIndices BasicRenderer::findQueueFamilies(VkPhysicalDev
   }
 
 
-struct Vertex {
-    glm::vec2 pos;
-    glm::vec3 color;
-
-    static VkVertexInputBindingDescription getBindingDescription() {
-        VkVertexInputBindingDescription bindingDescription = {};
-        bindingDescription.binding = 0;
-        bindingDescription.stride = sizeof(Vertex);
-        bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
-
-        return bindingDescription;
-    }
-
-    static std::array<VkVertexInputAttributeDescription, 2> getAttributeDescriptions() {
-        std::array<VkVertexInputAttributeDescription, 2> attributeDescriptions = {};
-
-        attributeDescriptions[0].binding = 0;
-        attributeDescriptions[0].location = 0;
-        attributeDescriptions[0].format = VK_FORMAT_R32G32_SFLOAT;
-        attributeDescriptions[0].offset = offsetof(Vertex, pos);
-
-        attributeDescriptions[1].binding = 0;
-        attributeDescriptions[1].location = 1;
-        attributeDescriptions[1].format = VK_FORMAT_R32G32B32_SFLOAT;
-        attributeDescriptions[1].offset = offsetof(Vertex, color);
-
-        return attributeDescriptions;
-    }
-};
-
-const std::vector<Vertex> vertices = {
-    {{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
-    {{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
-    {{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},
-    {{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}}
-};
-
-const std::vector<uint16_t> indices = {
-    0, 1, 2, 2, 3, 0
-};
 
 
 
+BasicRenderer::BasicRenderer(std::vector<BasicRenderer::Vertex> verticies, 
+        std::vector<uint16_t> indicies){
+ #ifdef NDEBUG
+ d_enableValidationLayers = false;
+#else
+ d_enableValidationLayers = true;
+ std::cout<<"validation layers enabled" <<std::endl;
+#endif
+
+ d_verticies = verticies;
+ d_indicies = indicies;
+}
 
 BasicRenderer::BasicRenderer(){
   
@@ -152,17 +124,16 @@ BasicRenderer::BasicRenderer(){
  d_enableValidationLayers = true;
 #endif
 
- std::cout<<"table of return codes for this machine" << std::endl;
- std::cout<<"VK_SUCCESS: "<<VK_SUCCESS<<std::endl; 
- std::cout<<"VK_TIMEOUT: "<<VK_TIMEOUT<<std::endl; 
- std::cout<<"VK_NOT_READY: "<<VK_NOT_READY<<std::endl; 
- std::cout<<"VK_SUBOPTIMAL_KHR: "<<VK_SUBOPTIMAL_KHR<<std::endl; 
- std::cout<<"VK_ERROR_OUT_OF_HOST_MEMORY: "<<VK_ERROR_OUT_OF_HOST_MEMORY<<std::endl; 
- std::cout<<"VK_ERROR_OUT_OF_DEVICE_MEMORY: "<<VK_ERROR_OUT_OF_DEVICE_MEMORY<<std::endl; 
- std::cout<<"VK_ERROR_DEVICE_LOST: "<<VK_ERROR_DEVICE_LOST<<std::endl; 
- std::cout<<"VK_ERROR_OUT_OF_DATE_KHR: "<<VK_ERROR_OUT_OF_DATE_KHR<<std::endl; 
- std::cout<<"VK_ERROR_SURFACE_LOST_KHR: "<<VK_ERROR_SURFACE_LOST_KHR<<std::endl; 
- std::cout<<"VK_ERROR_EXTENSION_NOT_PRESENT: "<<VK_ERROR_EXTENSION_NOT_PRESENT<<std::endl; 
+ d_verticies = {
+    {{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
+    {{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
+    {{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},
+    {{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}}
+};
+
+d_indicies = {
+    0, 1, 2, 2, 3, 0
+};
 }
 
 BasicRenderer::~BasicRenderer(){
@@ -813,7 +784,7 @@ void BasicRenderer::createCommandPool(){
 
 void BasicRenderer::createVertexBuffer(){
 
-        VkDeviceSize bufferSize = sizeof(vertices[0]) * vertices.size();
+        VkDeviceSize bufferSize = sizeof(d_verticies[0]) * d_verticies.size();
 
         VkBuffer stagingBuffer;
         VkDeviceMemory stagingBufferMemory;
@@ -821,7 +792,7 @@ void BasicRenderer::createVertexBuffer(){
 
         void* data;
         vkMapMemory(d_device, stagingBufferMemory, 0, bufferSize, 0, &data);
-            memcpy(data, vertices.data(), (size_t) bufferSize);
+            memcpy(data, d_verticies.data(), (size_t) bufferSize);
         vkUnmapMemory(d_device, stagingBufferMemory);
 
         createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, d_vertexBuffer, d_vertexBufferMemory);
@@ -832,7 +803,7 @@ void BasicRenderer::createVertexBuffer(){
         vkFreeMemory(d_device, stagingBufferMemory, nullptr);
 }
 void BasicRenderer::createIndexBuffer(){
-        VkDeviceSize bufferSize = sizeof(indices[0]) * indices.size();
+        VkDeviceSize bufferSize = sizeof(d_indicies[0]) * d_indicies.size();
 
         VkBuffer stagingBuffer;
         VkDeviceMemory stagingBufferMemory;
@@ -840,7 +811,7 @@ void BasicRenderer::createIndexBuffer(){
 
         void* data;
         vkMapMemory(d_device, stagingBufferMemory, 0, bufferSize, 0, &data);
-            memcpy(data, indices.data(), (size_t) bufferSize);
+            memcpy(data, d_indicies.data(), (size_t) bufferSize);
         vkUnmapMemory(d_device, stagingBufferMemory);
 
         createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, d_indexBuffer, d_indexBufferMemory);
@@ -891,7 +862,7 @@ void BasicRenderer::createCommandBuffers(){
 
                 vkCmdBindIndexBuffer(d_commandBuffers[i], d_indexBuffer, 0, VK_INDEX_TYPE_UINT16);
 
-                vkCmdDrawIndexed(d_commandBuffers[i], static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
+                vkCmdDrawIndexed(d_commandBuffers[i], static_cast<uint32_t>(d_indicies.size()), 1, 0, 0, 0);
 
             vkCmdEndRenderPass(d_commandBuffers[i]);
 

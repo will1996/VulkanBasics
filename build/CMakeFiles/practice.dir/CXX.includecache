@@ -53,6 +53,8 @@ vulkan/vulkan.h
 /Users/willchambers/Projects/VulkanPractice/basicRender.hpp
 GLFW/glfw3.h
 -
+array
+-
 glm/glm.hpp
 -
 optional
@@ -63,6 +65,12 @@ vector
 /Users/willchambers/Projects/VulkanPractice/basicVulkan.cpp
 basicRender.hpp
 /Users/willchambers/Projects/VulkanPractice/basicRender.hpp
+vector
+-
+iostream
+-
+string
+-
 
 /usr/local/include/glm/common.hpp
 detail/qualifier.hpp
